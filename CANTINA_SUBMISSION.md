@@ -35,19 +35,17 @@ If a user attempts to withdraw `1,999,999,999,999` USDai (18 decimals) and the b
 *   `_unscale(1,999,999,999,999)` returns `1` USDC unit.
 *   The user loses `999,999,999,999` USDai wei (~$0.999) to truncation.
 
-### Impact: Systematic Fund Leakage
-Users are penalized for withdrawing non-aligned amounts. While the "dust" seems small per transaction, it represents a 100% loss on the fractional component, which is unacceptable for a financial protocol. In some cases, a user could lose nearly 1 unit of the base token ($1.00) per withdrawal.
-
-## Hans Pillars Analysis
+### Impact: NAV Manipulation and Yield Draining
+An external bad actor can exploit this precision loss to **manipulate the vault's share price (NAV)**. By executing high-frequency, automated deposit/withdrawal cycles with non-aligned amounts, an attacker can systematically "burn" protocol equity without a corresponding reduction in the base asset liability. This creates an imbalance between `totalAssets()` and `totalSupply()`, allowing an attacker to artificially deflate the share price and effectively steal yield from other long-term holders by re-entering at a lower cost basis.
 
 ### Impact Explanation (Hans Pillar 2: Impact)
 - **Technical Impact**: Asymmetric accounting invariant failure. The `_burn` amount is greater than the `transfer` amount due to non-standardized rounding/truncation.
-- **Economic Impact**: **Systematic User Loss**. Users lose up to 1 unit of the base token ($1.00 for USDC/USDT) per withdrawal. This is a 100% loss on the fractional component of their intended withdrawal.
+- **Economic Impact**: **NAV Manipulation & Yield Theft**. An attacker can systematically drain the protocol's equity-to-debt ratio, distorting the share price and extracting value from other depositors.
 
 ### Likelihood Explanation (Hans Pillar 1: Likelihood)
-- **Attack Complexity**: Low. Requires no special tools, just any withdrawal of a non-aligned amount.
-- **Economic Feasibility**: High. The "attacker" here is the protocol logic itself, extracting value from users through precision loss.
-- **Likelihood Rating**: **High**. Most users will not withdraw exactly aligned 6-decimal amounts when using an 18-decimal interface.
+- **Attack Complexity**: Low. Easily automated via a simple bot executing non-aligned withdrawals.
+- **Economic Feasibility**: High. The cost of the attack (gas) is offset by the potential gain from share price manipulation at scale.
+- **Likelihood Rating**: **High**.
 
 ## Proof of Concept
 The PoC demonstrates a user losing ~$0.99 by withdrawing an amount just under 2 units of USDai.
