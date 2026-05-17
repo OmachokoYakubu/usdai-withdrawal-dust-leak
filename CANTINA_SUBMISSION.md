@@ -160,4 +160,4 @@ The protocol should either:
 1.  **Round up** the burn amount to ensure the user receives the exact value of what they paid for.
 2.  **Truncate the burn amount** so only the exact multiple of the scale factor is removed from the user's balance.
 
-Detailed remediation steps are provided in [REMEDIATION_STRATEGY.md](./REMEDIATION_STRATEGY.md).
+Detailed remediation steps are provided in [REMEDIATION_STRATEGY.md](https://github.com/OmachokoYakubu/usdai-withdrawal-dust-leak/blob/main/REMEDIATION_STRATEGY.md).
